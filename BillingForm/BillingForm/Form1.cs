@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
+
 
 namespace BillingForm
 {
@@ -26,21 +28,9 @@ namespace BillingForm
         public Form1()
         {
             InitializeComponent();
+            CappuccinoRB.Checked = true;
         }
 
-        private void Form1_Load(object sender, EventArgs e){}
-
-        private void textBox2_TextChanged(object sender, EventArgs e){}
-
-        private void TaxCB_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void QuantityTB_TextChanged(object sender, EventArgs e)
-        {
-
-        }
 
         // calculation of price
         private void CalculateBT_Click(object sender, EventArgs e)
@@ -95,43 +85,88 @@ namespace BillingForm
 
             }
 
-
-
                 
         }
 
         private void ClearBT_Click(object sender, EventArgs e)
         {
-
+            CappuccinoRB.Checked = true;
+            ItemAmountTB.Clear();
+            QuantityTB.Clear();
+            QuantityTB.Focus();
+            TaxCB.Checked = false;
         }
 
-        private void ItemAmountTB_TextChanged(object sender, EventArgs e)
-        {
 
-        }
-
-        private void SubTotalTB_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void TaxTB_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void TotalTB_TextChanged(object sender, EventArgs e)
-        {
-
-        }
 
         private void newOrderToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            DialogResult responseDialogResult;
+            string messageStr;
 
+            messageStr = "Clear the current order figures?";
+            responseDialogResult = MessageBox.Show(messageStr, "Clear Order?",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+                MessageBoxDefaultButton.Button2);        
+        
+            if (responseDialogResult == DialogResult.Yes)
+            {
+                ClearBT_Click(sender, e);
+                SubTotalTB.Text = " ";
+                TaxTB.Text = " ";
+                TotalTB.Text = " ";
+
+                if (subtotalDec != 0)
+                    {
+                    grandTotalDec += totalDec;
+                    countInt += 1;
+
+                    subtotalDec = 0;
+                    totalDec = 0;
+                    }
+                TaxCB.Enabled = true;
+                TaxCB.Checked = false;
+
+                ClearBT.Enabled = false;
+                clearItemToolStripMenuItem.Enabled = false;
+                newOrderToolStripMenuItem.Enabled = false;
+
+            }     
         }
 
         private void summaryToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            decimal averageDec;
+            string messageStr;
+
+            if (totalDec != 0)
+            {
+                newOrderToolStripMenuItem_Click(sender, e);
+            }
+
+            if (countInt > 0)
+            {
+                averageDec = grandTotalDec / countInt;
+                messageStr = "Number of Orders: " +
+                    countInt.ToString() +
+                    Environment.NewLine + Environment.NewLine +
+                    "Total Sales: " + grandTotalDec.ToString("C") +
+                    Environment.NewLine + Environment.NewLine +
+                    "Average Sales: " + averageDec.ToString("C");
+
+                MessageBox.Show(messageStr, "Coffee Sales Summary",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+
+
+            }
+            else
+            {
+                messageStr = "No sales to summarize.";
+                MessageBox.Show(messageStr, "Coffee Sales Summary",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
 
         }
 
@@ -144,14 +179,13 @@ namespace BillingForm
 
         private void calculateSelectionToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            CalculateBT_Click(sender, null);
         }
 
         private void clearItemToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            ClearBT_Click(sender, null);
         }
-
 
         // About in Help
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -160,5 +194,40 @@ namespace BillingForm
             aboutMessage = "R & R Billing " + Environment.NewLine + "Programmed by Ruby Radosevic";
             MessageBox.Show(aboutMessage, "About Billing", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+
+        private void fontToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            fontDialog1.Font = SubTotalTB.Font;
+            fontDialog1.ShowDialog();
+            SubTotalTB.Font = fontDialog1.Font;
+            TaxTB.Font = fontDialog1.Font;
+            TotalTB.Font = fontDialog1.Font;
+
+        }
+
+        private void colorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            colorDialog1.Color = SubTotalTB.ForeColor;
+            colorDialog1.ShowDialog();
+            SubTotalTB.ForeColor = colorDialog1.Color;
+            TaxTB.ForeColor = colorDialog1.Color;
+            TotalTB.ForeColor = colorDialog1.Color;
+
+        }
+
+
+
+        // not being used
+        private void QuantityTB_TextChanged(object sender, EventArgs e){}
+        private void Form1_Load(object sender, EventArgs e){}
+        private void textBox2_TextChanged(object sender, EventArgs e){}
+        private void TaxCB_CheckedChanged(object sender, EventArgs e){}
+        private void ItemAmountTB_TextChanged(object sender, EventArgs e){}
+        private void SubTotalTB_TextChanged(object sender, EventArgs e){}
+        private void TaxTB_TextChanged(object sender, EventArgs e){}
+        private void TotalTB_TextChanged(object sender, EventArgs e){}
+
     }
 }
